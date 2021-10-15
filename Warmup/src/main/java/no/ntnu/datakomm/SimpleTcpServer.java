@@ -14,7 +14,7 @@ import java.util.Locale;
  * A Simple TCP server, used as a warm-up exercise for assignment A4.
  */
 public class SimpleTcpServer {
-    private static final int PORT = 1010;
+    private static final int PORT = 1301;
 
     public static void main(String[] args) {
         SimpleTcpServer server = new SimpleTcpServer();
