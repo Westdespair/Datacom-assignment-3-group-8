@@ -1,5 +1,11 @@
 package no.ntnu.datakomm;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 /**
  * A Simple TCP client, used as a warm-up exercise for assignment A4.
  */
@@ -7,7 +13,7 @@ public class SimpleTcpClient {
     // Remote host where the server will be running
     private static final String HOST = "localhost";
     // TCP port
-    private static final int PORT = 1301;
+    private static final int PORT = 1101;
 
     /**
      * Run the TCP Client.
@@ -109,9 +115,34 @@ public class SimpleTcpClient {
      * @return True when connection established, false on error
      */
     private boolean connectToServer(String host, int port) {
-        // TODO - implement this method
-        // Remember to catch all possible exceptions that the Socket class can throw.
-        return false;
+        try {
+            String sentence, modifiedSentence;
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+
+            Socket clientSocket = new Socket("localhost", 3101);
+
+            PrintWriter outToServer = new PrintWriter(
+                    clientSocket.getOutputStream(), true);
+
+            BufferedReader inFromServer = new BufferedReader(
+                    new InputStreamReader(clientSocket.getInputStream()));
+
+            sentence = inFromUser.readLine();
+
+            outToServer.println(sentence);
+
+            modifiedSentence = inFromServer.readLine();
+
+            System.out.println("FROM SERVER: " + modifiedSentence);
+
+            closeConnection(clientSocket);
+            // Remember to catch all possible exceptions that the Socket class can throw.
+            //TODO dårlig kode;
+            return false;
+        } catch (IOException e) {
+            System.out.println("Socket error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -120,9 +151,14 @@ public class SimpleTcpClient {
      * @return True on success, false otherwise. Note: if the connection was already closed (not established),
      * return true as well.
      */
-    private boolean closeConnection() {
-        // TODO - implement this method
-        return false;
+    private boolean closeConnection(Socket clientSocket) {
+        try {
+            clientSocket.close();
+            return false;
+        } catch (IOException e){
+            System.out.println("Could not close connection. Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -133,6 +169,7 @@ public class SimpleTcpClient {
      * @return True when message successfully sent, false on error.
      */
     private boolean sendRequestToServer(String request) {
+
         // TODO - implement this method
         // Hint: you should check if the connection is open
         return false;
@@ -145,6 +182,7 @@ public class SimpleTcpClient {
      * (not included in the returned value).
      */
     private String readResponseFromServer() {
+
         // TODO - implement this method
         // Hint: you should check if the connection is open
         return null;
