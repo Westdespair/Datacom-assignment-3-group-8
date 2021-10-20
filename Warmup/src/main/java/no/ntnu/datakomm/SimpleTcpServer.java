@@ -9,14 +9,23 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Locale;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * A Simple TCP server, used as a warm-up exercise for assignment A4.
  */
 public class SimpleTcpServer {
     private static final int PORT = 1301;
 
+    private final Logger logger;
+
+    public SimpleTcpServer() {
+        this.logger = Logger.getLogger(getClass().toString());
+    }
+
+
     public static void main(String[] args) {
+
         SimpleTcpServer server = new SimpleTcpServer();
         log("Simple TCP server starting");
         server.run();
@@ -28,26 +37,45 @@ public class SimpleTcpServer {
         ServerSocket welcomeSocket = new ServerSocket(PORT);
         System.out.println("Server started on port " + PORT);
 
-        boolean mustRun = true;
+        String response;
 
+        boolean mustRun = true;
         while(mustRun) {
             Socket clientSocket = welcomeSocket.accept();
-            //clienthandler
+
+
+            InputStreamReader reader = new InputStreamReader(clientSocket.getInputStream());
+            BufferedReader bufReader = new BufferedReader(reader);
+
+            String clientInput = bufReader.readLine();
+            System.out.println("Client sent: " + clientInput);
+            String[] parts = clientInput.split(" ");
+
+            if (parts.length == 3){
+                response = parts[0] + " " + parts[1].toUpperCase() + " " + parts[2];
+            } else {
+                response = "ERROR";
+            }
+            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(),true);
+            writer.println(response);
+
+            clientSocket.close();
+
+            welcomeSocket.close();
+
+            mustRun = false;
         }
 
-        InputStreamReader reader = new InputStreamReader(clientSocket.getInputStream());
-        BufferedReader bufferedReader = new BufferedReader(reader);
 
-        String clientInput = bufferedReader.readLine();
-        System.out.println("Client sent: " + clientInput);
-
-        clientSocket.close();
-
-        welcomeSocket.close();
-
-        }
-        catch (IOException e){
+        }catch (IOException e){
+            logger.log(Level.WARNING, "Error, not able to open socket");
             e.printStackTrace();
+        }catch (SecurityException s){
+            logger.log(Level.WARNING, "The operation is not allowed to run");
+            s.printStackTrace();
+        }catch (IllegalArgumentException i){
+            logger.log(Level.WARNING, "The port is invalid");
+            i.printStackTrace();
         }
         // TODO - implement the logic of the server, according to the protocol.
         // Take a look at the tutorial to understand the basic blocks: creating a listening socket,
@@ -63,22 +91,4 @@ public class SimpleTcpServer {
         System.out.println(message);
     }
 
-   /** public boolean binOfCode(){
-        String clientSentence, capitalizedSentence;
-        ServerSocket welcomeSocket = new ServerSocket(3101);
-        while(true){
-            Socket connectionSocket = welcomeSocket.accept();
-            BufferedReader inFromClient = new BufferedReader(
-                    new InputStreamReader(connectionSocket.getInputStream()));
-            PrintWriter outToClient = new PrintWriter(
-                    connectionSocket.getOutputStream(), true);
-            clientSentence = inFromClient.readLine();
-            capitalizedSentence = clientSentence.toUpperCase(Locale.ROOT);
-            outToClient.println(capitalizedSentence);
-        } catch(IOException e){
-
-        }
-
-    }
-    */
 }

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class SimpleTcpClient {
     // Remote host where the server will be running
-    private static final String HOST = "datakomm.work";
+    private static final String HOST = "localhost";
     // TCP port
     private static final int PORT = 1301;
     //Logger
