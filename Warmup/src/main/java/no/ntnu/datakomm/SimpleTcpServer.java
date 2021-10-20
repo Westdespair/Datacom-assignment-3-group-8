@@ -27,7 +27,13 @@ public class SimpleTcpServer {
         try{
         ServerSocket welcomeSocket = new ServerSocket(PORT);
         System.out.println("Server started on port " + PORT);
-        Socket clientSocket = welcomeSocket.accept();
+
+        boolean mustRun = true;
+
+        while(mustRun) {
+            Socket clientSocket = welcomeSocket.accept();
+            //clienthandler
+        }
 
         InputStreamReader reader = new InputStreamReader(clientSocket.getInputStream());
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -39,8 +45,9 @@ public class SimpleTcpServer {
 
         welcomeSocket.close();
 
-        } catch (IOException e){
-
+        }
+        catch (IOException e){
+            e.printStackTrace();
         }
         // TODO - implement the logic of the server, according to the protocol.
         // Take a look at the tutorial to understand the basic blocks: creating a listening socket,
