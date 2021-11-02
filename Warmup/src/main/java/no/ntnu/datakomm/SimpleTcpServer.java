@@ -63,7 +63,6 @@ public class SimpleTcpServer {
 
             welcomeSocket.close();
 
-            mustRun = false;
         }
 
 

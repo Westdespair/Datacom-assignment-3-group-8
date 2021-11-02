@@ -10,6 +10,7 @@ public class TCPClient {
     private BufferedReader fromServer;
     private Socket connection;
 
+
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
 
@@ -23,10 +24,22 @@ public class TCPClient {
      * @return True on success, false otherwise
      */
     public boolean connect(String host, int port) {
-        // TODO Step 1: implement this method
-        // Hint: Remember to process all exceptions and return false on error
-        // Hint: Remember to set up all the necessary input/output stream variables
-        return false;
+        boolean connected = false;
+        try {
+            this.connection = new Socket(host, port);
+            this.fromServer = new BufferedReader(new InputStreamReader(this.connection.getInputStream()));
+            this.toServer = new PrintWriter(this.connection.getOutputStream(), true);
+            connected = true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException i) {
+            i.printStackTrace();
+        } catch (SecurityException s) {
+            s.printStackTrace();
+            //TODO
+        }
+        return connected;
     }
 
     /**
@@ -39,9 +52,15 @@ public class TCPClient {
      * that no two threads call this method in parallel.
      */
     public synchronized void disconnect() {
-        // TODO Step 4: implement this method
-        // Hint: remember to check if connection is active
-    }
+        if (connection.isConnected()) {
+            try {
+                connection.close();
+            } catch (IOException i){
+                i.printStackTrace();
+                //TODO
+            }
+            }
+        }
 
     /**
      * @return true if the connection is active (opened), false if not.
