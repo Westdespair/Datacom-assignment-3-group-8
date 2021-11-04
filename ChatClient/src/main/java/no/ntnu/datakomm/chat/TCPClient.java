@@ -52,7 +52,7 @@ public class TCPClient {
      * that no two threads call this method in parallel.
      */
     public synchronized void disconnect() {
-        if (connection.isConnected()) {
+        if (isConnectionActive()) {
             try {
                 connection.close();
             } catch (IOException i){
@@ -76,8 +76,16 @@ public class TCPClient {
      * @return true on success, false otherwise
      */
     private boolean sendCommand(String cmd) {
-        // TODO Step 2: Implement this method
-        // Hint: Remember to check if connection is active
+        if(isConnectionActive()){
+            try{
+                toServer.println(cmd);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("The conncetion was closed");
+        }
         return false;
     }
 
@@ -88,7 +96,13 @@ public class TCPClient {
      * @return true if message sent, false on error
      */
     public boolean sendPublicMessage(String message) {
-        // TODO Step 2: implement this method
+        try {
+            sendCommand("msg" + message);
+            //toServer.println(message);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
         return false;
@@ -100,8 +114,13 @@ public class TCPClient {
      * @param username Username to use
      */
     public void tryLogin(String username) {
-        // TODO Step 3: implement this method
-        // Hint: Reuse sendCommand() method
+        try {
+            sendCommand("login");
+            toServer.println(username);
+            refreshUserList();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -122,7 +141,7 @@ public class TCPClient {
      * @return true if message sent, false on error
      */
     public boolean sendPrivateMessage(String recipient, String message) {
-        // TODO Step 6: Implement this method
+
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
         return false;
