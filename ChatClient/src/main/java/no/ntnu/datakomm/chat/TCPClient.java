@@ -37,7 +37,6 @@ public class TCPClient {
             i.printStackTrace();
         } catch (SecurityException s) {
             s.printStackTrace();
-            //TODO
         }
         return connected;
     }
@@ -84,7 +83,7 @@ public class TCPClient {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("The conncetion was closed");
+            System.out.println("The connection was closed");
         }
         return false;
     }
@@ -97,7 +96,7 @@ public class TCPClient {
      */
     public boolean sendPublicMessage(String message) {
         try {
-            sendCommand("msg" + message);
+            sendCommand("msg " + message);
             //toServer.println(message);
             return true;
         } catch (Exception e) {
