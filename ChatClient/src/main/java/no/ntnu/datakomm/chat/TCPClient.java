@@ -114,7 +114,7 @@ public class TCPClient {
      */
     public void tryLogin(String username) {
         try {
-            sendCommand("login");
+            sendCommand("login " + username);
             toServer.println(username);
             refreshUserList();
         }catch (Exception e){
