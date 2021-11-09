@@ -102,7 +102,6 @@ public class TCPClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
         return false;
     }
@@ -127,6 +126,7 @@ public class TCPClient {
      * clear your current user list and use events in the listener.
      */
     public void refreshUserList() {
+        sendCommand("users");
         // TODO Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
@@ -162,11 +162,16 @@ public class TCPClient {
      * @return one line of text (one command) received from the server
      */
     private String waitServerResponse() {
-        // TODO Step 3: Implement this method
+        //TODO: Ensure this method functions as intended. Currently uncertain. -Sindre
+        String response = null;
+        try {
+           response = fromServer.readLine();
+        } catch (Exception e){
+            e.printStackTrace();
+    }
         // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
-
-        return null;
+        return response;
     }
 
     /**
@@ -199,7 +204,16 @@ public class TCPClient {
      */
     private void parseIncomingCommands() {
         while (isConnectionActive()) {
-            // TODO Step 3: Implement this method
+            String response = waitServerResponse();
+            switch (response) {
+                case "loginok":
+                    onLoginResult(true, "Log in OK!");
+                    break;
+
+                case "loginerr":
+                    onLoginResult(false,"Log in error");
+                    break;
+            }
             // Hint: Reuse waitServerResponse() method
             // Hint: Have a switch-case (or other way) to check what type of response is received from the server
             // and act on it.
