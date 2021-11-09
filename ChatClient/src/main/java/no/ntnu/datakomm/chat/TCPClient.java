@@ -54,12 +54,13 @@ public class TCPClient {
         if (isConnectionActive()) {
             try {
                 connection.close();
+                onDisconnect();
             } catch (IOException i){
+                //Will throw socketException
                 i.printStackTrace();
-                //TODO
-            }
             }
         }
+    }
 
     /**
      * @return true if the connection is active (opened), false if not.
@@ -166,10 +167,16 @@ public class TCPClient {
         String response = null;
         try {
            response = fromServer.readLine();
+           if (response == null) {
+               disconnect();
+           }
+
         } catch (Exception e){
             e.printStackTrace();
+            disconnect();
     }
         // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
+        // TODO: Disconnecting and reconnecting is currently not possible. I believe this is tied to this method. -Sindre
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         return response;
     }
@@ -277,6 +284,10 @@ public class TCPClient {
      * Internet error)
      */
     private void onDisconnect() {
+        for (ChatListener l : listeners) {
+            l.onDisconnect();
+        }
+
         // TODO Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
     }
