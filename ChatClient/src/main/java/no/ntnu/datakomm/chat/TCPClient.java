@@ -147,14 +147,11 @@ public class TCPClient {
     public boolean sendPrivateMessage(String recipient, String message) {
         if (isConnectionActive()) {
             try {
-                sendCommand("mgs" );
-                //toServer.println(message);
+                sendCommand("privmsg " + recipient + " " + message);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // Hint: Reuse sendCommand() method
-            // Hint: update lastError if you want to store the reason for the error.
         }
             return false;
     }
