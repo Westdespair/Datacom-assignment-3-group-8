@@ -53,7 +53,10 @@ public class TCPClient {
     public synchronized void disconnect() {
         if (isConnectionActive()) {
             try {
+                toServer = null;
+                fromServer = null;
                 connection.close();
+                connection = null;
                 onDisconnect();
             } catch (IOException i){
                 //Will throw socketException
