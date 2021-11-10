@@ -2,6 +2,8 @@ package no.ntnu.datakomm.chat;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -222,7 +224,9 @@ public class TCPClient {
     private void parseIncomingCommands() {
         while (isConnectionActive()) {
             String response = waitServerResponse();
-            switch (response) {
+            String command = response.split(" ")[0];
+            System.out.println(command);
+            switch (command) {
                 case "loginok":
                     onLoginResult(true, "Log in OK!");
                     break;
@@ -230,6 +234,16 @@ public class TCPClient {
                 case "loginerr":
                     onLoginResult(false,"Log in error");
                     break;
+
+                case "users":
+                    String[] responseList = response.split(" ");
+                    ArrayList<String> responseArrayList = new ArrayList<String>(Arrays.asList(responseList));
+                    //Ensures "users" doesn't become an user by trimming it from the array
+                    responseArrayList.remove(0);
+                    responseList = responseArrayList.toArray(new String[0]);
+                    onUsersList(responseList);
+                    break;
+
 
                 default:
                     break;
