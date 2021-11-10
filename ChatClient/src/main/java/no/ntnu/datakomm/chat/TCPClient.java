@@ -145,10 +145,18 @@ public class TCPClient {
      * @return true if message sent, false on error
      */
     public boolean sendPrivateMessage(String recipient, String message) {
-
-        // Hint: Reuse sendCommand() method
-        // Hint: update lastError if you want to store the reason for the error.
-        return false;
+        if (isConnectionActive()) {
+            try {
+                sendCommand("mgs" );
+                //toServer.println(message);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Hint: Reuse sendCommand() method
+            // Hint: update lastError if you want to store the reason for the error.
+        }
+            return false;
     }
 
 
