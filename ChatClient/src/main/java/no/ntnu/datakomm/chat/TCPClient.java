@@ -155,6 +155,14 @@ public class TCPClient {
      * Send a request for the list of commands that server supports.
      */
     public void askSupportedCommands() {
+        try {
+            sendCommand("help");
+            toServer.println();
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
         // TODO Step 8: Implement this method
         // Hint: Reuse sendCommand() method
     }
@@ -222,6 +230,9 @@ public class TCPClient {
 
                 case "loginerr":
                     onLoginResult(false,"Log in error");
+                    break;
+
+                default:
                     break;
             }
             // Hint: Reuse waitServerResponse() method
@@ -340,6 +351,8 @@ public class TCPClient {
      * @param commands Commands supported by the server
      */
     private void onSupported(String[] commands) {
+
+
         // TODO Step 8: Implement this method
     }
 }
