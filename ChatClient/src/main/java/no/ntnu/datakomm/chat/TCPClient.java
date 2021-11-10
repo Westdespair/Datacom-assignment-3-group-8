@@ -180,7 +180,6 @@ public class TCPClient {
      * @return one line of text (one command) received from the server
      */
     private String waitServerResponse() {
-        //TODO: Ensure this method functions as intended. Currently uncertain. -Sindre
         String response = null;
         try {
            response = fromServer.readLine();
@@ -192,8 +191,6 @@ public class TCPClient {
             e.printStackTrace();
             disconnect();
     }
-        // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
-        // TODO: Disconnecting and reconnecting is currently not possible. I believe this is tied to this method. -Sindre
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         return response;
     }
@@ -229,7 +226,9 @@ public class TCPClient {
     private void parseIncomingCommands() {
         while (isConnectionActive()) {
             String response = waitServerResponse();
-            String command = response.split(" ")[0];
+            String regex = " ";
+            String command = response.split(regex)[0];
+
             System.out.println(command);
             switch (command) {
                 case "loginok":
@@ -241,14 +240,16 @@ public class TCPClient {
                     break;
 
                 case "users":
-                    String[] responseList = response.split(" ");
-                    ArrayList<String> responseArrayList = new ArrayList<String>(Arrays.asList(responseList));
-                    //Ensures "users" doesn't become an user by trimming it from the array
-                    responseArrayList.remove(0);
-                    responseList = responseArrayList.toArray(new String[0]);
-                    onUsersList(responseList);
+                    onUsersList(filterCommandAndGetStringList(response));
                     break;
 
+                case "msg":
+                    onMsgReceived(false, response.split(regex)[1],response.split(regex, 3)[2]);
+                    break;
+
+                case "privmsg":
+                    onMsgReceived(true, response.split(regex)[1], response.split(regex, 3)[2]);
+                    break;
 
                 default:
                     break;
@@ -258,15 +259,10 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
-
-            // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
-
-            // TODO Step 7: add support for incoming chat messages from other users (types: msg, privmsg)
             // TODO Step 7: add support for incoming message errors (type: msgerr)
             // TODO Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
-
             // TODO Step 8: add support for incoming supported command list (type: supported)
 
         }
@@ -319,8 +315,6 @@ public class TCPClient {
         for (ChatListener l : listeners) {
             l.onDisconnect();
         }
-
-        // TODO Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
     }
 
@@ -343,7 +337,9 @@ public class TCPClient {
      * @param text   Message text
      */
     private void onMsgReceived(boolean priv, String sender, String text) {
-        // TODO Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onMessageReceived(new TextMessage(sender, priv, text));
+        }
     }
 
     /**
@@ -375,4 +371,35 @@ public class TCPClient {
 
         // TODO Step 8: Implement this method
     }
+
+    /**
+     * @param stringList The list of strings.
+     * @param regex The string that will be between array indices.
+     * @return resultString
+     */
+    private String getStringListAsString(String[] stringList, String regex) {
+       StringBuilder resultString = null;
+        for (String stringPiece: stringList) {
+            resultString.append(regex).append(stringPiece);
+        }
+
+        return resultString.toString();
+
+    }
+    /**
+     *
+     * @param string The string to be filtered. The first word separated by spaces is removed.
+     * @return stringList An array with the filtered strings.
+     */
+    private String[] filterCommandAndGetStringList(String string) {
+        String[] stringList = string.split(" ");
+        ArrayList<String> stringArrayList = new ArrayList<String>(Arrays.asList(stringList));
+        //Trims the first "word" from the array
+        stringArrayList.remove(0);
+        stringList = stringArrayList.toArray(new String[0]);
+        return stringList;
+    }
+
+
+
 }
