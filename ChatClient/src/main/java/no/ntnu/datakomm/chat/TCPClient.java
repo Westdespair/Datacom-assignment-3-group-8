@@ -34,10 +34,13 @@ public class TCPClient {
             connected = true;
 
         } catch (IOException e) {
+            System.out.println("Something was interrupted");
             e.printStackTrace();
         } catch (IllegalArgumentException i) {
+            System.out.println("Illegal characters were used");
             i.printStackTrace();
         } catch (SecurityException s) {
+            System.out.println("A security violation occurred");
             s.printStackTrace();
         }
         return connected;
@@ -103,7 +106,7 @@ public class TCPClient {
     public boolean sendPublicMessage(String message) {
         try {
             sendCommand("msg " + message);
-            //toServer.println(message);
+            toServer.println(message);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -251,6 +254,20 @@ public class TCPClient {
                     onMsgReceived(true, response.split(regex)[1], response.split(regex, 3)[2]);
                     break;
 
+                    //skjønna ikke helt ka i hell på me
+                case "msgerr":
+                    onMsgError(response.split(regex)[1]);
+                    break;
+
+                    //skjønna ikke helt ka i hell på me
+                case "cmderr":
+                    onCmdError(response.split(regex)[1]);
+                    break;
+
+                case "supported":
+                    onSupported(new String[]{response.split(regex)[1]});
+                    break;
+
                 default:
                     break;
             }
@@ -347,8 +364,10 @@ public class TCPClient {
      *
      * @param errMsg Error description returned by the server
      */
-    private void onMsgError(String errMsg) {
-        // TODO Step 7: Implement this method
+    private void onMsgError( String errMsg) {
+        for (ChatListener l : listeners) {
+            l.onMessageError(errMsg);
+        }
     }
 
     /**
@@ -357,7 +376,9 @@ public class TCPClient {
      * @param errMsg Error message
      */
     private void onCmdError(String errMsg) {
-        // TODO Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onCommandError(errMsg);
+        }
     }
 
     /**
@@ -367,9 +388,9 @@ public class TCPClient {
      * @param commands Commands supported by the server
      */
     private void onSupported(String[] commands) {
-
-
-        // TODO Step 8: Implement this method
+        for (ChatListener l : listeners) {
+            l.onSupportedCommands(commands);
+        }
     }
 
     /**
