@@ -252,11 +252,11 @@ public class TCPClient {
                     break;
 
                 case "msgerr":
-                    onMsgError(Arrays.toString(response.split(regex)));
+                    onMsgError(response + "\n The message didnt go thru");
                     break;
 
                 case "cmderr":
-                    onCmdError(Arrays.toString(response.split(regex)));
+                    onCmdError(response + "\n The commmand was invalid");
                     break;
 
                 case "supported":
