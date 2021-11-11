@@ -35,13 +35,10 @@ public class TCPClient {
 
         } catch (IOException e) {
             System.out.println("Something was interrupted");
-            e.printStackTrace();
         } catch (IllegalArgumentException i) {
             System.out.println("Illegal characters were used");
-            i.printStackTrace();
         } catch (SecurityException s) {
             System.out.println("A security violation occurred");
-            s.printStackTrace();
         }
         return connected;
     }
@@ -64,8 +61,7 @@ public class TCPClient {
                 connection = null;
                 onDisconnect();
             } catch (IOException i){
-                //Will throw socketException
-                i.printStackTrace();
+                System.out.print("A socket error occurred");
             }
         }
     }
@@ -89,7 +85,7 @@ public class TCPClient {
                 toServer.println(cmd);
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.print("A socket error occurred");
             }
         } else {
             System.out.println("The connection was closed");
@@ -111,7 +107,6 @@ public class TCPClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Hint: update lastError if you want to store the reason for the error.
         return false;
     }
 
@@ -172,8 +167,6 @@ public class TCPClient {
             e.printStackTrace();
 
         }
-        // TODO Step 8: Implement this method
-        // Hint: Reuse sendCommand() method
     }
 
 
@@ -216,9 +209,7 @@ public class TCPClient {
      */
     public void startListenThread() {
         // Call parseIncomingCommands() in the new thread.
-        Thread t = new Thread(() -> {
-            parseIncomingCommands();
-        });
+        Thread t = new Thread(this::parseIncomingCommands);
         t.start();
     }
 
@@ -234,6 +225,7 @@ public class TCPClient {
 
             System.out.println(command);
             switch (command) {
+
                 case "loginok":
                     onLoginResult(true, "Log in OK!");
                     break;
@@ -254,18 +246,16 @@ public class TCPClient {
                     onMsgReceived(true, response.split(regex)[1], response.split(regex, 3)[2]);
                     break;
 
-                    //skjønna ikke helt ka i hell på me
                 case "msgerr":
-                    onMsgError(response.split(regex)[1]);
+                    onMsgError(Arrays.toString(response.split(regex)));
                     break;
 
-                    //skjønna ikke helt ka i hell på me
                 case "cmderr":
-                    onCmdError(response.split(regex)[1]);
+                    onCmdError(Arrays.toString(response.split(regex)));
                     break;
 
                 case "supported":
-                    onSupported(new String[]{response.split(regex)[1]});
+                    onSupported(response.split(regex));
                     break;
 
                 default:
@@ -281,6 +271,7 @@ public class TCPClient {
             // TODO Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
             // TODO Step 8: add support for incoming supported command list (type: supported)
+
 
         }
     }
@@ -332,7 +323,6 @@ public class TCPClient {
         for (ChatListener l : listeners) {
             l.onDisconnect();
         }
-        // Hint: all the onXXX() methods will be similar to onLoginResult()
     }
 
     /**
