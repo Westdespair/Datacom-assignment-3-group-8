@@ -424,6 +424,14 @@ public class GUIController implements ChatListener {
         });
     }
 
+    @Override
+    public void onJoke(String joke) {
+        Platform.runLater(() -> {
+            TextMessage msg = new TextMessage("joke", false, joke);
+            addMsgToGui(true, msg, false);
+        });
+    }
+
     /**
      * This method is called when connection (socket) is closed by the remote
      * end (server).

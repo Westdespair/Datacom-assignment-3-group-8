@@ -101,9 +101,14 @@ public class TCPClient {
      */
     public boolean sendPublicMessage(String message) {
         try {
-            sendCommand("msg " + message);
-            toServer.println(message);
-            return true;
+            if(message.equals("/joke")){
+                sendCommand("joke");
+                return true;
+            } else {
+                sendCommand("msg " + message);
+                toServer.println(message);
+                return true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -258,6 +263,10 @@ public class TCPClient {
                     onSupported(response.split(regex));
                     break;
 
+                case "joke":
+                    onJoke(response);
+                    break;
+
                 default:
                     break;
             }
@@ -380,6 +389,12 @@ public class TCPClient {
     private void onSupported(String[] commands) {
         for (ChatListener l : listeners) {
             l.onSupportedCommands(commands);
+        }
+    }
+
+    private void onJoke(String joke){
+        for(ChatListener l : listeners){
+            l.onJoke(joke);
         }
     }
 
