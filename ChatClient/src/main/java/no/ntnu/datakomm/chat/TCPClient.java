@@ -106,7 +106,6 @@ public class TCPClient {
                 return true;
             } else {
                 sendCommand("msg " + message);
-                toServer.println(message);
                 return true;
             }
         } catch (Exception e) {
@@ -123,7 +122,6 @@ public class TCPClient {
     public void tryLogin(String username) {
         try {
             sendCommand("login " + username);
-            toServer.println(username);
             refreshUserList();
         }catch (Exception e){
             e.printStackTrace();
@@ -166,7 +164,6 @@ public class TCPClient {
     public void askSupportedCommands() {
         try {
             sendCommand("help");
-            toServer.println();
 
         }catch (Exception e){
             e.printStackTrace();
